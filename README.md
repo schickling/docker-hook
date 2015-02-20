@@ -54,7 +54,7 @@ docker run -d $IMAGE
 
 ## How it works
 
-`docker-hook` is written in plain Bash and does have **no further dependencies**. It uses `nc` to listen for incoming HTTP requests from Docker Hub and then executes the provided [command](#command) if the [authenfication](#authentification) was successful.
+`docker-hook` is written in plain Bash and does have **no further dependencies**. It uses `nc` to listen for incoming HTTP requests from Docker Hub and then executes the provided [command](#command) if the [authentification](#authentification) was successful.
 
 ## License
 
