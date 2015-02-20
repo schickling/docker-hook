@@ -1,6 +1,6 @@
 # docker-hook
 
-> Automatic Docker Deployment
+> Automatic Docker Deployment via Hooks
 
 ## Features
 
