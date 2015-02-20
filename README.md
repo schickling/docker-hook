@@ -1,6 +1,6 @@
 # docker-hook
 
-> Automatic Docker Deployment via Hooks
+> Automatic Docker Deployment via [Webhooks](https://docs.docker.com/docker-hub/repos/#webhooks)
 
 ## Features
 
