@@ -11,11 +11,9 @@
 
 ## Setup
 
-#### Configuration On Docker Hub
+### 1. Prepare Your Server
 
-... port
-
-#### Installation On Your Server
+#### Download `docker-hook`
 
 No worries - it just downloads a bash script. There won't be anything installed or written elsewhere.
 
@@ -23,17 +21,25 @@ No worries - it just downloads a bash script. There won't be anything installed 
 $ curl https://raw.github.com/schickling/docker-hook/master/docker-hook > /usr/local/bin/docker-hook; chmod +x /usr/local/bin/docker-hook
 ```
 
-## Usage
+#### Start `docker-hook`
 
 ```sh
 $ docker-hook <auth-token> <command>
 ```
 
-#### Command
+##### Auth-Token
 
-... trigger
+Please choose a secure `auth-token` string or generate one with `$ uuidgen`. Keep it safe or otherwise other people might be able to trigger the specified command.
 
-#### Authentification
+##### Command
+
+The `command` can be any bash command of your choice. See the following [example](#example).
+
+### 2. Configuration On Docker Hub
+
+Add a webhook like on the following image. `example.com` can be the domain of your server or its ip address. `docker-hook` listens to port `8555`. Please replace `my-super-safe-token` with your `auth-token`.
+
+![](http://i.imgur.com/B6QyfmC.png)
 
 ## Example
 
@@ -62,7 +68,7 @@ $ curl -X POST yourdomain.com:8555/my-super-safe-token
 
 ## How it works
 
-`docker-hook` is written in plain Bash and does have **no further dependencies**. It uses `nc` to listen for incoming HTTP requests from Docker Hub and then executes the provided [command](#command) if the [authentification](#authentification) was successful.
+`docker-hook` is written in plain Bash and does have **no further dependencies**. It uses `nc` to listen for incoming HTTP requests from Docker Hub and then executes the provided [command](#command) if the [authentification](#auth-token) was successful.
 
 ## License
 
