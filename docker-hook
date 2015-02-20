@@ -1,6 +1,12 @@
 #! /bin/bash
 
 main() {
+  if [[ -z "$1" || -z "$2" ]]; then
+    echo "Error: Arguments missing"
+    echo "Usage: docker-hook <auth-toke> <command>"
+    exit 1
+  fi
+
   local token="$1"
   local cmd="${@:2}"
   local port=8555
