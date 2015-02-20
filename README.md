@@ -33,6 +33,25 @@ $ docker-hook <auth-token> <command>
 
 #### Authentification
 
+## Example
+
+This example will stop the current running `yourname/app` container, pull the newest version and start a new container.
+
+```sh
+$ docker-hook my-super-safe-token ./deploy.sh
+```
+
+#### `deploy.sh`
+
+```sh
+#! /bin/bash
+
+IMAGE="yourname/app"
+docker ps | grep $IMAGE | awk '{print $1}' | xargs docker stop
+docker pull $IMAGE
+docker run -d $IMAGE
+```
+
 ## How it works
 
 `docker-hook` is written in plain Bash and does have **no further dependencies**. It uses `nc` to listen for incoming HTTP requests from Docker Hub and then executes the provided [command](#command) if the [authenfication](#authentification) was successful.
