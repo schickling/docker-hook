@@ -1,10 +1,19 @@
 #! /bin/bash
 
 main() {
-  # Be unforgiving about errors
-  set -euo pipefail
+  local token="$1"
+  local cmd="${@:2}"
+  local port=8555
+  local ip=$(hostname -i)
 
-  nc -kl 8555
+  echo "Server listening on $ip:$port. Have you added a webhook to Dockerhub yet?"
+
+  nc -kl $port | while read line
+    do
+      if echo $line | grep -q $token; then
+        bash -c "$cmd"
+      fi
+    done
 }
 
 [[ "$0" == "$BASH_SOURCE" ]] && main $@
