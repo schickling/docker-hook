@@ -2,6 +2,8 @@
 
 > Automatic Docker Deployment via [Webhooks](https://docs.docker.com/docker-hub/repos/#webhooks)
 
+`docker-hook` listens to incoming HTTP requests and triggers your specified command.
+
 ## Features
 
 * No dependencies
@@ -33,7 +35,7 @@ Please choose a secure `auth-token` string or generate one with `$ uuidgen`. Kee
 
 ##### Command
 
-The `command` can be any bash command of your choice. See the following [example](#example).
+The `command` can be any bash command of your choice. See the following [example](#example). This command will be triggered each time someone makes a HTTP request.
 
 ### 2. Configuration On Docker Hub
 
