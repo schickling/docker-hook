@@ -11,11 +11,11 @@
 
 ## Setup
 
-#### On Docker Hub
+#### Configuration On Docker Hub
 
-...
+... port
 
-#### On Your Server
+#### Installation On Your Server
 
 No worries - it just downloads a bash script. There won't be anything installed or written elsewhere.
 
@@ -30,6 +30,8 @@ $ docker-hook <auth-token> <command>
 ```
 
 #### Command
+
+... trigger
 
 #### Authentification
 
@@ -50,6 +52,12 @@ IMAGE="yourname/app"
 docker ps | grep $IMAGE | awk '{print $1}' | xargs docker stop
 docker pull $IMAGE
 docker run -d $IMAGE
+```
+
+You can now test it by pushing something to `yourname/app` or by running the following command where `yourdomain.com` is either a domain pointing to your server or just its ip address.
+
+```sh
+$ curl -X POST yourdomain.com:8555/my-super-safe-token
 ```
 
 ## How it works

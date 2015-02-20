@@ -1,1 +1,10 @@
 #! /bin/bash
+
+main() {
+  # Be unforgiving about errors
+  set -euo pipefail
+
+  nc -kl 8555
+}
+
+[[ "$0" == "$BASH_SOURCE" ]] && main $@
