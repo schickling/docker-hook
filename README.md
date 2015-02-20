@@ -72,6 +72,10 @@ $ curl -X POST yourdomain.com:8555/my-super-safe-token
 
 `docker-hook` is written in plain Bash and does have **no further dependencies**. It uses `nc` to listen for incoming HTTP requests from Docker Hub and then executes the provided [command](#command) if the [authentification](#auth-token) was successful.
 
+## Caveat
+
+This tool was built as a proof-of-concept and might not be completly secure. If you have any improvement suggestions please open up an issue.
+
 ## License
 
 [MIT License](http://opensource.org/licenses/MIT)
