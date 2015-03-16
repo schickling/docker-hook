@@ -1,25 +1,41 @@
-#! /bin/bash
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
 
-main() {
-  if [[ -z "$1" || -z "$2" ]]; then
-    echo "Error: Arguments missing"
-    echo "Usage: docker-hook <auth-toke> <command>"
-    exit 1
-  fi
+"""Automatic Docker Deployment via Webhooks"""
 
-  local token="$1"
-  local cmd="${@:2}"
-  local port=8555
-  local ip=$(hostname -i)
+from os import system
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
+from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 
-  echo "Server listening on $ip:$port. Have you added a webhook to Dockerhub yet?"
+ADDR = "0.0.0.0"
+PORT = 8555
 
-  nc -kl $port | while read line
-    do
-      if echo $line | grep -q $token; then
-        bash -c "$cmd"
-      fi
-    done
-}
+parser = ArgumentParser(description=__doc__,
+                        formatter_class=ArgumentDefaultsHelpFormatter)
 
-[[ "$0" == "$BASH_SOURCE" ]] && main $@
+parser.add_argument("-t", "--token",
+                    dest="token",
+                    required=True,
+                    help=("Secure auth token (can be choosen "
+                          "arbitrarily)"))
+parser.add_argument("-c", "--cmd",
+                    dest="cmd",
+                    required=True,
+                    nargs="*",
+                    help="Command to execute when triggered")
+
+args = parser.parse_args()
+
+
+class RequestHandler(BaseHTTPRequestHandler):
+    def do_POST(self):
+        print(self.path)
+        if args.token in self.path:
+            system(" ".join(args.cmd))
+            self.send_response(200, "OK")
+        else:
+            self.send_response(401, "Not authorized")
+        self.end_headers()
+
+httpd = HTTPServer((ADDR, PORT), RequestHandler)
+httpd.serve_forever()
