@@ -17,7 +17,7 @@
 
 #### Download `docker-hook`
 
-No worries - it just downloads a bash script. There won't be anything installed or written elsewhere.
+No worries - it just downloads a Python script. There won't be anything installed or written elsewhere.
 
 ```sh
 $ curl https://raw.githubusercontent.com/schickling/docker-hook/master/docker-hook > /usr/local/bin/docker-hook; chmod +x /usr/local/bin/docker-hook
@@ -70,7 +70,7 @@ $ curl -X POST yourdomain.com:8555/my-super-safe-token
 
 ## How it works
 
-`docker-hook` is written in plain Bash and does have **no further dependencies**. It uses `nc` to listen for incoming HTTP requests from Docker Hub and then executes the provided [command](#command) if the [authentification](#auth-token) was successful.
+`docker-hook` is written in plain Python and does have **no further dependencies**. It uses `BaseHTTPRequestHandler` to listen for incoming HTTP requests from Docker Hub and then executes the provided [command](#command) if the [authentification](#auth-token) was successful.
 
 ## Caveat
 
