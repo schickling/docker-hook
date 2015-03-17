@@ -5,29 +5,19 @@
 
 from os import system
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
-from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
-
-ADDR = "0.0.0.0"
-PORT = 8555
-
-parser = ArgumentParser(description=__doc__,
-                        formatter_class=ArgumentDefaultsHelpFormatter)
-
-parser.add_argument("-t", "--token",
-                    dest="token",
-                    required=True,
-                    help=("Secure auth token (can be choosen "
-                          "arbitrarily)"))
-parser.add_argument("-c", "--cmd",
-                    dest="cmd",
-                    required=True,
-                    nargs="*",
-                    help="Command to execute when triggered")
-
-args = parser.parse_args()
+try:
+    # For Python 3.0 and later
+    from http.server import HTTPServer
+    from http.server import BaseHTTPRequestHandler
+except ImportError:
+    # Fall back to Python 2
+    from BaseHTTPServer import BaseHTTPRequestHandler
+    from BaseHTTPServer import HTTPServer as HTTPServer
+import sys
 
 
 class RequestHandler(BaseHTTPRequestHandler):
+    """A POST request handler which expects a token in its path."""
     def do_POST(self):
         print(self.path)
         if args.token in self.path:
@@ -37,5 +27,44 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.send_response(401, "Not authorized")
         self.end_headers()
 
-httpd = HTTPServer((ADDR, PORT), RequestHandler)
-httpd.serve_forever()
+
+def get_parser():
+    """Get a command line parser for docker-hook."""
+    parser = ArgumentParser(description=__doc__,
+                            formatter_class=ArgumentDefaultsHelpFormatter)
+
+    parser.add_argument("-t", "--token",
+                        dest="token",
+                        required=True,
+                        help=("Secure auth token (can be choosen "
+                              "arbitrarily)"))
+    parser.add_argument("-c", "--cmd",
+                        dest="cmd",
+                        required=True,
+                        nargs="*",
+                        help="Command to execute when triggered")
+    parser.add_argument("--addr",
+                        dest="addr",
+                        default="0.0.0.0",
+                        help="address where it listens")
+    parser.add_argument("--port",
+                        dest="port",
+                        type=int,
+                        default=8555,
+                        metavar="PORT",
+                        help="port where it listens")
+    return parser
+
+
+def main(addr, port):
+    """Start a HTTPServer which waits for requests."""
+    httpd = HTTPServer((addr, port), RequestHandler)
+    httpd.serve_forever()
+
+if __name__ == '__main__':
+    parser = get_parser()
+    if len(sys.argv) == 1:
+        parser.print_help()
+        sys.exit(1)
+    args = parser.parse_args()
+    main(args.addr, args.port)
