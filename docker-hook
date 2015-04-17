@@ -4,6 +4,7 @@
 """Automatic Docker Deployment via Webhooks"""
 
 import json
+import os
 from subprocess import Popen
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 try:
@@ -24,7 +25,8 @@ class RequestHandler(BaseHTTPRequestHandler):
         json_payload = self.rfile.read(int(self.headers.getheader('content-length', "0")))
         if len(json_payload) > 0:
             json_params = json.loads(json_payload)
-        env = dict(('REPOSITORY_' + var.upper(), str(val))
+        env = dict(os.environ)
+        env.update(('REPOSITORY_' + var.upper(), str(val))
                    for var, val in json_params['repository'].items())
         if args.token in self.path:
             Popen(args.cmd, env=env).wait()
