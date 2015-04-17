@@ -21,8 +21,9 @@ class RequestHandler(BaseHTTPRequestHandler):
     """A POST request handler which expects a token in its path."""
     def do_POST(self):
         print(self.path)
-        json_payload = self.rfile.read(int(self.headers.getheader('content-length')))
-        json_params = json.loads(json_payload)
+        json_payload = self.rfile.read(int(self.headers.getheader('content-length', "0")))
+        if len(json_payload) > 0:
+            json_params = json.loads(json_payload)
         env = dict(('REPOSITORY_' + var.upper(), str(val))
                    for var, val in json_params['repository'].items())
         if args.token in self.path:
