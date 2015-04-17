@@ -3,7 +3,9 @@
 
 """Automatic Docker Deployment via Webhooks"""
 
-from os import system
+import json
+import os
+from subprocess import Popen
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 try:
     # For Python 3.0 and later
@@ -20,8 +22,14 @@ class RequestHandler(BaseHTTPRequestHandler):
     """A POST request handler which expects a token in its path."""
     def do_POST(self):
         print(self.path)
+        json_payload = self.rfile.read(int(self.headers.getheader('content-length', "0")))
+        if len(json_payload) > 0:
+            json_params = json.loads(json_payload)
+        env = dict(os.environ)
+        env.update(('REPOSITORY_' + var.upper(), str(val))
+                   for var, val in json_params['repository'].items())
         if args.token in self.path:
-            system(" ".join(args.cmd))
+            Popen(args.cmd, env=env).wait()
             self.send_response(200, "OK")
         else:
             self.send_response(401, "Not authorized")
