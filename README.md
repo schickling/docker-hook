@@ -48,7 +48,7 @@ Add a webhook like on the following image. `example.com` can be the domain of yo
 This example will stop the current running `yourname/app` container, pull the newest version and start a new container.
 
 ```sh
-$ docker-hook my-super-safe-token ./deploy.sh
+$ docker-hook -t my-super-safe-token -c sh ./deploy.sh
 ```
 
 #### `deploy.sh`
