@@ -16,21 +16,54 @@ except ImportError:
     from BaseHTTPServer import BaseHTTPRequestHandler
     from BaseHTTPServer import HTTPServer as HTTPServer
 import sys
+import logging
+import requests
+
+logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
+                    level=logging.DEBUG,
+                    stream=sys.stdout)
 
 
 class RequestHandler(BaseHTTPRequestHandler):
     """A POST request handler which expects a token in its path."""
     def do_POST(self):
-        print(self.path)
-        json_payload = self.rfile.read(int(self.headers.getheader('content-length', "0")))
+        logging.info("Path: %s", self.path)
+        header_length = int(self.headers.getheader('content-length', "0"))
+        json_payload = self.rfile.read(header_length)
+        env = dict(os.environ)
+        json_params = {}
         if len(json_payload) > 0:
             json_params = json.loads(json_payload)
-        env = dict(os.environ)
-        env.update(('REPOSITORY_' + var.upper(), str(val))
-                   for var, val in json_params['repository'].items())
+            env.update(('REPOSITORY_' + var.upper(), str(val))
+                       for var, val in json_params['repository'].items())
+
+        # Check if the secret URL was called
         if args.token in self.path:
-            Popen(args.cmd, env=env).wait()
-            self.send_response(200, "OK")
+            logging.info("Start executing '%s'" % args.cmd)
+            try:
+                Popen(args.cmd, env=env).wait()
+                self.send_response(200, "OK")
+                if 'callback_url' in json_params:
+                    # Make a callback to Docker Hub
+                    data = {'state': 'success'}
+                    headers = {'Content-type': 'application/json',
+                               'Accept': 'text/plain'}
+                    requests.post(json_params['callback_url'],
+                                  data=json.dumps(data),
+                                  headers=headers)
+            except OSError as err:
+                self.send_response(500, "OSError")
+                logging.error("You probably didn't use 'sh ./script.sh'.")
+                logging.error(err)
+                if 'callback_url' in json_params:
+                    # Make a callback to Docker Hub
+                    data = {'state': 'failure',
+                            'description': str(err)}
+                    headers = {'Content-type': 'application/json',
+                               'Accept': 'text/plain'}
+                    requests.post(json_params['callback_url'],
+                                  data=json.dumps(data),
+                                  headers=headers)
         else:
             self.send_response(401, "Not authorized")
         self.end_headers()
