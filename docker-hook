@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Automatic Docker Deployment via Webhooks"""
+"""Automatic Docker Deployment via Webhooks."""
 
 import json
 import os
@@ -26,6 +26,7 @@ logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
 
 class RequestHandler(BaseHTTPRequestHandler):
     """A POST request handler which expects a token in its path."""
+
     def do_POST(self):
         logging.info("Path: %s", self.path)
         header_length = int(self.headers.getheader('content-length', "0"))
@@ -38,7 +39,7 @@ class RequestHandler(BaseHTTPRequestHandler):
                        for var, val in json_params['repository'].items())
 
         # Check if the secret URL was called
-        if args.token in self.path:
+        if args.token == self.path[1:]:
             logging.info("Start executing '%s'" % args.cmd)
             try:
                 Popen(args.cmd, env=env).wait()
