@@ -31,7 +31,7 @@ $ docker-hook -t <auth-token> -c <command>
 
 ##### Auth-Token
 
-Please choose a secure `auth-token` string or generate one with `$ uuidgen`. Keep it safe or otherwise other people might be able to trigger the specified command.
+Please choose a secure `auth-token` string or generate one with `$ uuidgen`. Keep it safe or otherwise other people might be able to trigger the specified command. You can pass the `auth-token` as a command line argument, or set it as an environment variable.
 
 ##### Command
 
@@ -51,6 +51,12 @@ This example will stop the current running `yourname/app` container, pull the ne
 $ docker-hook -t my-super-safe-token -c sh ./deploy.sh
 ```
 
+If you want to store the authentication token as an environment variable, then run
+```sh
+# Make sure there is no space before or after the `=` sign
+$ export DOCKER_AUTH_TOKEN=<my-super-safe-token>
+$ docker-hook -c sh ./deploy.sh
+```
 #### `deploy.sh`
 
 ```sh

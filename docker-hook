@@ -23,7 +23,6 @@ logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
                     level=logging.DEBUG,
                     stream=sys.stdout)
 
-
 class RequestHandler(BaseHTTPRequestHandler):
     """A POST request handler which expects a token in its path."""
 
@@ -39,7 +38,8 @@ class RequestHandler(BaseHTTPRequestHandler):
                        for var, val in json_params['repository'].items())
 
         # Check if the secret URL was called
-        if args.token == self.path[1:]:
+        token = args.token or os.environ.get("DOCKER_AUTH_TOKEN")
+        if token == self.path[1:]:
             logging.info("Start executing '%s'" % args.cmd)
             try:
                 Popen(args.cmd, env=env).wait()
@@ -77,7 +77,7 @@ def get_parser():
 
     parser.add_argument("-t", "--token",
                         dest="token",
-                        required=True,
+                        required=False,
                         help=("Secure auth token (can be choosen "
                               "arbitrarily)"))
     parser.add_argument("-c", "--cmd",
